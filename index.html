@@ -2,6 +2,94 @@
 <html>
 <head>
   <title>LKRP!LR4</title>
+
+  <style>
+    body {
+  background: #050505;
+  font-family: 'Segoe UI', sans-serif;
+  color: #e6e6e6;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  text-align: center;
+  padding: 40px 0;
+  background: linear-gradient(135deg, #00faff, #ff00e6);
+  -webkit-background-clip: text;
+  color: transparent;
+  font-size: 2.5rem;
+  text-shadow: 0 0 20px #00faff55;
+}
+
+header p {
+  margin-top: -10px;
+  font-size: 1rem;
+  opacity: 0.7;
+}
+
+.input-area {
+  padding: 20px;
+  max-width: 900px;
+  margin: auto;
+}
+
+textarea {
+  width: 100%;
+  height: 140px;
+  background: #0a0a0a;
+  border: 2px solid #00faff;
+  color: #00faff;
+  padding: 12px;
+  border-radius: 10px;
+  outline: none;
+  box-shadow: 0 0 15px #00faff55;
+}
+
+button {
+  margin-top: 15px;
+  padding: 12px 25px;
+  background: linear-gradient(135deg, #00faff, #ff00e6);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #050505;
+  font-weight: bold;
+  transition: 0.2s;
+  box-shadow: 0 0 15px #00faff55;
+}
+
+button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 25px #ff00e655;
+}
+
+.script-list {
+  max-width: 900px;
+  margin: 30px auto;
+}
+
+.script-card {
+  background: #0a0a0a;
+  border: 2px solid #8b00ff;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 10px;
+  box-shadow: 0 0 15px #8b00ff55;
+}
+
+.script-card button {
+  margin-right: 10px;
+}
+  </style>
+
+</head>
+<body>
+
+  <!DOCTYPE html>
+<html>
+<head>
+  <title>LKRP!LR4</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -19,5 +107,76 @@
 <section id="list" class="script-list"></section>
 
 <script src="script.js"></script>
+</body>
+</html>
+
+  <script>
+    let scripts = JSON.parse(localStorage.getItem("scripts") || "{}");
+
+function save() {
+  localStorage.setItem("scripts", JSON.stringify(scripts));
+}
+
+function render() {
+  let list = document.getElementById("list");
+  list.innerHTML = "";
+
+  for (let name in scripts) {
+    let card = document.createElement("div");
+    card.className = "script-card";
+
+    card.innerHTML = `
+      <h3>${name}</h3>
+      <button onclick="runScript('${name}')">Run</button>
+      <button onclick="editScript('${name}')">Edit</button>
+      <button onclick="deleteScript('${name}')">Delete</button>
+    `;
+
+    list.appendChild(card);
+  }
+}
+
+document.getElementById("add").onclick = () => {
+  let code = document.getElementById("code").value;
+  let name = prompt("Script name:");
+  if (!name) return;
+
+  scripts[name] = code;
+  save();
+  render();
+};
+
+function editScript(name) {
+  let newCode = prompt("Edit code:", scripts[name]);
+  if (newCode !== null) {
+    scripts[name] = newCode;
+    save();
+    render();
+  }
+}
+
+function deleteScript(name) {
+  delete scripts[name];
+  save();
+  render();
+}
+
+function runScript(name) {
+  let win = window.open("about:blank", "_blank");
+
+  setTimeout(() => {
+    win.document.open();
+    win.document.write(`
+      <script>
+        ${scripts[name]}
+      <\/script>
+    `);
+    win.document.close();
+  }, 150);
+}
+
+render();
+  </script>
+
 </body>
 </html>
